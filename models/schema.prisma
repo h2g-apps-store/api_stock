@@ -25,7 +25,41 @@ model Users {
   deleted   Boolean  @default(false)
 }
 
+// Stock matière prémière
+model MatierePremiere {
+  id             String   @id @default(cuid())
+  designation    String?  @db.VarChar(100)
+  kiloDisponible Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  deleted        Boolean  @default(false)
+
+  EntreeStock EntreeStock[]
+}
+
+model EntreeStock {
+  id                String           @id @default(cuid())
+  dateOperation     DateTime?        @db.Date
+  matierePremiereId String?
+  nombreKg          Int              @default(0)
+  prixAchatByKg     Float            @default(0)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  deleted           Boolean          @default(false)
+  MatierePremiere   MatierePremiere? @relation(fields: [matierePremiereId], references: [id])
+
+  @@index([matierePremiereId])
+}
+
+// model Model {
+//   id        String   @id @default(cuid())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   deleted   Boolean  @default(false)
+// }
+
 enum Role {
+  AUCUN
   ADMIN
   USER
 }
@@ -34,4 +68,10 @@ enum Sexe {
   AUCUN
   F
   M
+}
+
+enum TypeAchat {
+  AUCUN
+  SAC
+  CARTON
 }
