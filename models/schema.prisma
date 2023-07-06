@@ -35,6 +35,7 @@ model MatierePremiere {
   deleted        Boolean  @default(false)
 
   EntreeStock EntreeStock[]
+  SortieStock SortieStock[]
 }
 
 model EntreeStock {
@@ -43,6 +44,20 @@ model EntreeStock {
   matierePremiereId String?
   nombreKg          Int              @default(0)
   prixAchatByKg     Float            @default(0)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  deleted           Boolean          @default(false)
+  MatierePremiere   MatierePremiere? @relation(fields: [matierePremiereId], references: [id])
+
+  @@index([matierePremiereId])
+}
+
+model SortieStock {
+  id                String           @id @default(cuid())
+  dateOperation     DateTime?        @db.Date
+  matierePremiereId String?
+  nombreKg          Int              @default(0)
+  motif             String?          @db.VarChar(200)
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
   deleted           Boolean          @default(false)

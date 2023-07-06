@@ -27,6 +27,7 @@ app
   /*Gestion Stok matière prémière */
   .use('/api/v1', require('./routes/Gestion Stock/Raw materials/Product'))
   .use('/api/v1', require('./routes/Gestion Stock/Raw materials/EntreeStock'))
+  // .use('/api/v1', require('./routes/Gestion Stock/Raw materials/SortieStock'))
 
   // catch 404 and forward to error handler
   .use(function (req, res, next) {
