@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "start": "nodemon ./bin/www",
+    "start-client": "cd ../frontend && yarn dev",
+    "dev": "concurrently -n 'server,client' -c 'red,green' \"npm start\" \"npm run start-client\""
   },
   "dependencies": {
     "@prisma/client": "^4.16.2",
