@@ -25,6 +25,19 @@ model Users {
   deleted   Boolean  @default(false)
 }
 
+// Gestion de fournisseur
+model Fournisseur {
+  id         String   @id @default(cuid())
+  nomComplet String?  @db.VarChar(100)
+  adresse    String?  @db.VarChar(255)
+  contact    Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deleted    Boolean  @default(false)
+
+  EntreeStock EntreeStock[]
+}
+
 // Stock matière prémière
 model MatierePremiere {
   id             String   @id @default(cuid())
@@ -41,6 +54,7 @@ model MatierePremiere {
 model EntreeStock {
   id                String           @id @default(cuid())
   dateOperation     DateTime?        @db.Date
+  fournisseurId     String?
   matierePremiereId String?
   nombreKg          Int              @default(0)
   prixAchatByKg     Float            @default(0)
@@ -48,8 +62,10 @@ model EntreeStock {
   updatedAt         DateTime         @updatedAt
   deleted           Boolean          @default(false)
   MatierePremiere   MatierePremiere? @relation(fields: [matierePremiereId], references: [id])
+  Fournisseur       Fournisseur?     @relation(fields: [fournisseurId], references: [id])
 
   @@index([matierePremiereId])
+  @@index([fournisseurId])
 }
 
 model SortieStock {

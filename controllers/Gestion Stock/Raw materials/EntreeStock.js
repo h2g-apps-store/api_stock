@@ -7,21 +7,44 @@ module.exports = class EntreeStock {
     async create({ body }, res) {
         try {
             checkEmpty(body)
-            const { productId, dateOperation, ...data } = body;
-            const row = await prisma.matierePremiere.update({
-                where: { id: productId },
-                data: {
-                    kiloDisponible: { increment: data?.nombreKg },
-                    EntreeStock: {
-                        create: {
-                            ...data,
-                            dateOperation: !dateOperation ? new Date() :
-                                new Date(dateOperation)
+            const { products, dateOperation, fournisseurId } = body;
+
+            if (products && !products?.length)
+                throw `Veuillez ajouter au moins un produit...`;
+
+            // Check produits
+            const productList = [];
+            products.map((product, i) => {
+                checkEmpty(product)
+                const doublon = products.filter(x => x?.productId == product?.productId).length;
+                if (doublon > 1)
+                    throw `Le produit de la ligne ${++i} est repris ${doublon} fois.`;
+                productList.push({
+                    dateOperation: !dateOperation ? new Date() :
+                        new Date(dateOperation),
+                    fournisseurId: fournisseurId,
+                    matierePremiereId: product?.productId,
+                    prixAchatByKg: product?.prixAchatByKg,
+                    nombreKg: product?.nombreKg
+                })
+            });
+
+            // Save data
+            productList.map(async data => {
+                const { matierePremiereId, ...infos } = data;
+                await prisma.matierePremiere.update({
+                    where: { id: matierePremiereId },
+                    data: {
+                        kiloDisponible: { increment: data?.nombreKg },
+                        EntreeStock: {
+                            createMany: {
+                                data: infos
+                            }
                         }
                     }
-                }
-            })
-            successMessage(res, `Stock ${row?.designation} ravitaillé avec succès.`)
+                })
+            });
+            successMessage(res, `${productList.length} ligne(s) affectée(s) avec succès.`)
         } catch (error) {
             errorMessage(res, error)
         }
